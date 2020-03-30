@@ -17,8 +17,8 @@ import (
 
 // From https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
 const (
-	url    = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
-	csvURL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip"
+	xmlURL90 = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml" // Last 90 days only
+	csvURL   = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip"
 )
 
 // ErrNoCurrencyData indicates that no currency data exists for the sought after country code.
@@ -152,10 +152,13 @@ func UpdateExchangeRates() (map[string]rate, error) {
 			var dt time.Time
 			for j, col := range record {
 				if j == 0 {
-					dt, _ = time.Parse("2006-01-02", col)
+					dt = parseTime(col)
 					continue
 				}
-				if col == "" || col == "N/A" {
+				if col == "" {
+					continue
+				} else if col == "N/A" {
+					// Ancient currencies
 					continue
 				}
 
@@ -168,6 +171,69 @@ func UpdateExchangeRates() (map[string]rate, error) {
 		}
 	}
 
+	/*
+	   USD	US dollar
+	   JPY	Japanese yen
+	   BGN	Bulgarian lev
+	   CZK	Czech koruna
+	   DKK	Danish krone
+	   GBP	Pound sterling
+	   HUF	Hungarian forint
+	   PLN	Polish zloty
+	   RON	Romanian leu
+	   SEK	Swedish krona
+	   CHF	Swiss franc
+	   ISK	Icelandic krona
+	   NOK	Norwegian krone
+	   HRK	Croatian kuna
+	   RUB	Russian rouble
+	   TRY	Turkish lira
+	   AUD	Australian dollar
+	   BRL	Brazilian real
+	   CAD	Canadian dollar
+	   CNY	Chinese yuan renminbi
+	   HKD	Hong Kong dollar
+	   IDR	Indonesian rupiah
+	   ILS	Israeli shekel
+	   INR	Indian rupee
+	   KRW	South Korean won
+	   MXN	Mexican peso
+	   MYR	Malaysian ringgit
+	   NZD	New Zealand dollar
+	   PHP	Philippine peso
+	   SGD	Singapore dollar
+	   THB	Thai baht
+	   ZAR	South African rand
+	*/
+
 	CurrentRates["EUR"] = rate{&[]float64{1}[0], time.Now()}
+
+	// Add Hardcoded values
+	CurrentRates["NGN"] = hardcode(429.170, "2020-03-30")
+	CurrentRates["LKR"] = hardcode(207.896, "2020-03-30")
+
 	return CurrentRates, nil
+}
+
+// LoadHardcode is used to load custom currencies and their value.
+func LoadHardcode(cur string, val float64, t string) {
+	lock.Lock()
+	defer lock.Unlock()
+
+	currentRates[cur] = hardcode(val, t)
+}
+
+func hardcode(val float64, t string) rate {
+	if val == 0 {
+		return rate{nil, parseTime(t)}
+	}
+	return rate{&val, parseTime(t)}
+}
+
+func parseTime(s string) time.Time {
+	t, err := time.Parse("2006-01-02", s)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }

@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	p := models.LocalPrice{models.Price{10000, "AUD"}, "AU"}
+	p := models.LocalPrice{models.Price{1, "AUD"}, "AU"}
 
-	np, _ := fair.FairPrice(p, "NZ", "NZD")
+	np, _ := fair.FairPrice(p, "NZ", "EUR")
 	fmt.Println("fair price:      ", np)
 	discount, _ := exchangerate.ConvertExchangeRate(np.Price, "AUD")
 	fmt.Println("discounted price:", discount)
