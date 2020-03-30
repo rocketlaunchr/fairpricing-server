@@ -21,6 +21,7 @@ const (
 	csvURL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip"
 )
 
+// ErrNoCurrencyData indicates that no currency data exists for the sought after country code.
 var ErrNoCurrencyData = errors.New("no currency data")
 
 type rate struct {
@@ -30,7 +31,7 @@ type rate struct {
 
 var (
 	lock         sync.RWMutex
-	currentRates map[string]rate // 1 Euro = x
+	currentRates map[string]rate // Key is upper case currency code.  Val is 1 Euro = x
 )
 
 func init() {
@@ -99,6 +100,9 @@ func ConvertExchangeRate(price models.Price, toCurrency string) (models.Price, e
 	return models.Price{tTarget, toCurrency}, nil
 }
 
+// UpdateExchangeRates will redownload the latest exchange rate data from the European Central Bank.
+//
+// See: https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
 func UpdateExchangeRates() (map[string]rate, error) {
 
 	CurrentRates := map[string]rate{}
@@ -164,5 +168,6 @@ func UpdateExchangeRates() (map[string]rate, error) {
 		}
 	}
 
+	CurrentRates["EUR"] = rate{&[]float64{1}[0], time.Now()}
 	return CurrentRates, nil
 }
