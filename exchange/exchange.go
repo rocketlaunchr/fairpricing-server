@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/rocketlaunchr/fairpricing/models"
 )
 
 // From https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
@@ -73,6 +75,28 @@ func GetExchangeRate(cur string) (float64, error) {
 	}
 
 	return *r.Value, nil
+}
+
+// ConvertExchangeRate converts price to toCurrency.
+func ConvertExchangeRate(price models.Price, toCurrency string) (models.Price, error) {
+
+	// Convert to Euro prices
+	frR, err := GetExchangeRate(price.Currency)
+	if err != nil {
+		return models.Price{}, err
+	}
+
+	tEuro := price.Value / frR
+
+	// Convert from Euro to target currency
+	toR, err := GetExchangeRate(toCurrency)
+	if err != nil {
+		return models.Price{}, err
+	}
+
+	tTarget := toR * tEuro
+
+	return models.Price{tTarget, toCurrency}, nil
 }
 
 func UpdateExchangeRates() (map[string]rate, error) {

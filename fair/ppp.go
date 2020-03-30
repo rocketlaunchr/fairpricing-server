@@ -1,4 +1,4 @@
-package main
+package fair
 
 // https://www.cia.gov/library/publications/the-world-factbook/rankorder/2004rank.html
 var pppGDPperCapita = map[string]float64{
