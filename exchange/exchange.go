@@ -100,6 +100,7 @@ func UpdateExchangeRates() (map[string]rate, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer zReader.Close()
 
 	// Decode csv
 	r := csv.NewReader(zReader)
