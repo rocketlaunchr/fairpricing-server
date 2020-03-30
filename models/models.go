@@ -15,9 +15,23 @@ type Price struct {
 	Currency string
 }
 
+// ValueISO4217 converts the Value to the correct number of decimal places.
+//
+// See: https://en.wikipedia.org/wiki/ISO_4217
+func (p Price) ValueISO4217() string {
+	switch p.Currency {
+	case "BIF", "CLP", "DJF", "GNF", "ISK", "JPY", "KMF", "KRW", "PYG", "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF":
+		return fmt.Sprintf("%.0f", p.Value)
+	case "BHD", "IQD", "JOD", "KWD", "TND":
+		return fmt.Sprintf("%.3f", p.Value)
+	default:
+		return fmt.Sprintf("%.2f", p.Value)
+	}
+}
+
 // String implements fmt.Stringer
 func (p Price) String() string {
-	return fmt.Sprintf("%.2f %s", p.Value, strings.ToUpper(p.Currency))
+	return fmt.Sprintf("%s %s", p.ValueISO4217(), strings.ToUpper(p.Currency))
 }
 
 // LocalPrice represents the price of an item in a particular country.
@@ -35,5 +49,5 @@ type LocalPrice struct {
 
 // String implements fmt.Stringer
 func (p LocalPrice) String() string {
-	return fmt.Sprintf("%.2f %s @ %s", p.Value, strings.ToUpper(p.Currency), strings.ToUpper(p.CountryCode))
+	return fmt.Sprintf("%s %s @ %s", p.ValueISO4217(), strings.ToUpper(p.Currency), strings.ToUpper(p.CountryCode))
 }
