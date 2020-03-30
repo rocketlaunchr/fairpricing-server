@@ -214,7 +214,7 @@ var pppGDPperCapita = map[string]float64{
 	"BURKINA FASO":                      1900,
 	"GUINEA-BISSAU":                     1800,
 	"HAITI":                             1800,
-	"GAMBIA, THE":                       1700,
+	"GAMBIA":                            1700,
 	"TOGO":                              1700,
 	"NORTH KOREA":                       1700,
 	"COMOROS":                           1600,

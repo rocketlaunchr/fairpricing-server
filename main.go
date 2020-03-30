@@ -1,12 +1,11 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
-)
 
-var ErrNoCurrencyData = errors.New("no currency data")
+	"github.com/rocketlaunchr/fairpricing/exchange"
+)
 
 type Price struct {
 	Value    float64 // smallest denomination (eg in cents for AUD)
@@ -30,20 +29,20 @@ func (p LocalPrice) String() string {
 func convertExchangeRate(fromPrice Price, toCurrency string) (Price, error) {
 
 	// Convert to Euro prices
-	frR, exists := exchangeRates[fromPrice.Currency]
-	if !exists {
-		return Price{}, ErrNoCurrencyData
+	frR, err := exchangerate.GetExchangeRate(fromPrice.Currency)
+	if err != nil {
+		return Price{}, err
 	}
 
-	tEuro := fromPrice.Value / frR.value
+	tEuro := fromPrice.Value / frR
 
 	// Convert from Euro to target currency
-	toR, exists := exchangeRates[toCurrency]
-	if !exists {
-		return Price{}, ErrNoCurrencyData
+	toR, err := exchangerate.GetExchangeRate(toCurrency)
+	if err != nil {
+		return Price{}, err
 	}
 
-	tTarget := toR.value * tEuro
+	tTarget := toR * tEuro
 
 	return Price{tTarget, toCurrency}, nil
 }
