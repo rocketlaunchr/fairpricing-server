@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -22,22 +21,14 @@ type ApiError struct {
 	Title  string `json:"title"`
 }
 
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprint(w, "Welcome!\n")
-}
-
-func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
-}
-
-
-
 func main() {
 	router := httprouter.New()
-	router.GET("/", Index)
-	router.GET("/hello/:name", Hello)
+	// GET /rates/{base}/{date}?currencies=x,y,z
 	router.GET("/rates/:base/:date", FetchRates)
+	// GET /convert/{price}/{to currency}/{date}
 	router.GET("/convert/:price/:toCurrency/:date", PriceConvert)
+	// GET /fair/{price+location}/{country code}/{currency}
+	router.GET("/fair/:locPrice/:countryCode/*currency", FairExchange)
 
 	log.Fatal(http.ListenAndServe(":4321", router))
 }
