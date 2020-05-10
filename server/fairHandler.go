@@ -1,67 +1,55 @@
 package main
 
 import (
-	"encoding/json"
-	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gofiber/fiber"
 	"github.com/rocketlaunchr/fairpricing/fair"
 	"github.com/rocketlaunchr/fairpricing/models"
-
 )
 
 //var countryCodes []string = []string{
 //
 //}
 
-type convLocalPrice struct{
+type convLocalPrice struct {
 	OldLocalPrice *models.LocalPrice `json:"old_local_price"`
 	NewLocalPrice *models.LocalPrice `json:"new_local_price"`
 }
 
-func FairExchange(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func FairExchange(c *fiber.Ctx) {
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	//w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	// locPrice e.g 100AUD@AU
-	locPrice := strings.Split(strings.ToUpper(ps.ByName("locPrice")), "@")
+	locPrice := strings.Split(strings.ToUpper(c.Params("locPrice")), "@")
 
 	price, loc := locPrice[0], locPrice[1]
 
 	currency := price[len(price)-3:]
 	err := validateCurrency(currency)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := JsonErrorResponse{Error: &ApiError{Status: 400, Title: err.Error()}}
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			panic(err)
-		}
+		c.Status(400).Send(err.Error())
+		return
 	}
 
 	amount, err := strconv.ParseFloat(price[:len(price)-3], 64)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := JsonErrorResponse{Error: &ApiError{Status: 400, Title: err.Error()}}
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			panic(err)
-		}
+		c.Status(400).Send(err.Error())
+		return
 	}
 
-	toCountryCode := strings.ToUpper(ps.ByName("countryCode"))
+	toCountryCode := strings.ToUpper(c.Params("countryCode"))
 	err = validateCountryCode(toCountryCode)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := JsonErrorResponse{Error: &ApiError{Status: 400, Title: err.Error()}}
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			panic(err)
-		}
+		c.Status(400).Send(err.Error())
+		return
 	}
 
 	localPrice := models.LocalPrice{Price: models.Price{Value: amount, Currency: currency}, CountryCode: loc}
 
-	toCurrency := strings.ToUpper(ps.ByName("currency"))
+	toCurrency := strings.ToUpper(c.Params("currency"))
 	toCurrency = strings.Trim(toCurrency, "/")
 
 	var toCur string
@@ -77,18 +65,11 @@ func FairExchange(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	np, err := fair.FairPrice(localPrice, toCountryCode, toCur)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := JsonErrorResponse{Error: &ApiError{Status: 500, Title: err.Error()}}
-		if err := json.NewEncoder(w).Encode(response); err != nil {
-			panic(err)
-		}
+		c.Status(500).Send(err.Error())
 		return
 	}
 
 	response := JsonResponse{Data: &convLocalPrice{OldLocalPrice: &localPrice, NewLocalPrice: &np}}
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		panic(err)
-	}
+	c.JSON(response)
 
 }

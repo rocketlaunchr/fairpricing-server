@@ -1,9 +1,7 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"log"
-	"net/http"
+	"github.com/gofiber/fiber"
 )
 
 type JsonResponse struct {
@@ -21,14 +19,19 @@ type ApiError struct {
 	Title  string `json:"title"`
 }
 
-func main() {
-	router := httprouter.New()
+func setUpRoutes(app *fiber.App) {
 	// GET /rates/{base}/{date}?currencies=x,y,z
-	router.GET("/rates/:base/:date", FetchRates)
+	app.Get("/rates/:base/:date", FetchRates)
 	// GET /convert/{price}/{to currency}/{date}
-	router.GET("/convert/:price/:toCurrency/:date", PriceConvert)
+	app.Get("/convert/:price/:toCurrency/:date", PriceConvert)
 	// GET /fair/{price+location}/{country code}/{currency}
-	router.GET("/fair/:locPrice/:countryCode/*currency", FairExchange)
+	app.Get("/fair/:locPrice/:countryCode/*currency", FairExchange)
+}
 
-	log.Fatal(http.ListenAndServe(":4321", router))
+func main() {
+	app := fiber.New()
+
+	setUpRoutes(app)
+	app.Listen(4321)
+
 }
