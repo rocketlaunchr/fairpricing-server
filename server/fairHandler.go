@@ -74,15 +74,20 @@ func FairExchange(c *fiber.Ctx) {
 	localPrice := models.LocalPrice{Price: models.Price{Value: amount, Currency: currency}, CountryCode: loc}
 
 	toCurrency := strings.ToUpper(c.Params("currency"))
-
 	var toCur string
 	if toCurrency != "" {
 		err = validateCurrency(toCurrency)
-		if err == nil {
-			toCur = toCurrency
+		if err != nil {
+			errorMsg := JsonErrorResponse{
+				Error: &ApiError{
+					Status: 404, Title: err.Error(),
+				},
+			}
+			c.Status(404).JSON(errorMsg)
 		}
-	}
-	if toCur == "" {
+		toCur = toCurrency
+
+	} else {
 		toCur = currency
 	}
 

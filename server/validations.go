@@ -4,9 +4,20 @@ import (
 	"fmt"
 	"strings"
 
-	exchangerate "github.com/rocketlaunchr/fairpricing/exchange"
-	fair "github.com/rocketlaunchr/fairpricing/fair"
+	"github.com/rocketlaunchr/fairpricing/fair"
 )
+
+var currencies []string = []string{
+	"USD", "JPY", "BGN", "CZK",
+	"DKK", "GBP", "HUF", "PLN",
+	"RON", "SEK", "CHF", "ISK",
+	"NOK", "HRK", "RUB", "TRY",
+	"AUD", "BRL", "CAD", "CNY",
+	"HKD", "IDR", "ILS", "INR",
+	"KRW", "MXN", "MYR", "NZD",
+	"PHP", "SGD", "THB", "ZAR",
+	"EUR", "NGN", "LKR",
+}
 
 func validateCurrency(cur string) error {
 
@@ -14,7 +25,7 @@ func validateCurrency(cur string) error {
 		return fmt.Errorf("invalid currency code format: %s", cur)
 	}
 
-	for k := range exchangerate.CurrentRates {
+	for _, k := range currencies {
 		if k == cur {
 			return nil
 		}
