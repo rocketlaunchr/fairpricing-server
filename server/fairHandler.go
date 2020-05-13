@@ -9,10 +9,6 @@ import (
 	"github.com/rocketlaunchr/fairpricing/models"
 )
 
-//var countryCodes []string = []string{
-//
-//}
-
 type convLocalPrice struct {
 	OldLocalPrice *models.LocalPrice `json:"old_local_price"`
 	NewLocalPrice *models.LocalPrice `json:"new_local_price"`
@@ -20,37 +16,64 @@ type convLocalPrice struct {
 
 func FairExchange(c *fiber.Ctx) {
 
-	//w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
 	// locPrice e.g 100AUD@AU
 	locPrice := strings.Split(strings.ToUpper(c.Params("locPrice")), "@")
 
 	price, loc := locPrice[0], locPrice[1]
 
-	currency := price[len(price)-3:]
-	err := validateCurrency(currency)
+	err := validateCountryCode(loc)
 	if err != nil {
-		c.Status(400).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
+		return
+	}
+
+	currency := price[len(price)-3:]
+	err = validateCurrency(currency)
+	if err != nil {
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
 		return
 	}
 
 	amount, err := strconv.ParseFloat(price[:len(price)-3], 64)
 	if err != nil {
-		c.Status(400).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
 		return
 	}
 
 	toCountryCode := strings.ToUpper(c.Params("countryCode"))
 	err = validateCountryCode(toCountryCode)
 	if err != nil {
-		c.Status(400).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
 		return
 	}
 
 	localPrice := models.LocalPrice{Price: models.Price{Value: amount, Currency: currency}, CountryCode: loc}
 
 	toCurrency := strings.ToUpper(c.Params("currency"))
-	toCurrency = strings.Trim(toCurrency, "/")
 
 	var toCur string
 	if toCurrency != "" {
@@ -65,7 +88,13 @@ func FairExchange(c *fiber.Ctx) {
 
 	np, err := fair.FairPrice(localPrice, toCountryCode, toCur)
 	if err != nil {
-		c.Status(500).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 500, Title: err.Error(),
+			},
+		}
+		c.Status(500).JSON(errorMsg)
+
 		return
 	}
 

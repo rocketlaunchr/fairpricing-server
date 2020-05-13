@@ -1,10 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
-	)
+)
 
 var currencies []string = []string{
 	"USD", "JPY", "BGN", "CZK",
@@ -15,16 +14,15 @@ var currencies []string = []string{
 	"HKD", "IDR", "ILS", "INR",
 	"KRW", "MXN", "MYR", "NZD",
 	"PHP", "SGD", "THB", "ZAR",
+	"EUR", "NGN", "LKR",
 }
+
+var countryCodes []string = []string{"", ""}
 
 func validateCurrency(cur string) error {
 
-	if len(cur) != 3 {
-		return errors.New("invalid currency format")
-	}
-
-	if !strings.Contains(strings.Join(currencies, " "), cur) {
-		return errors.New("invalid currency code format")
+	if len(cur) != 3 || !strings.Contains(strings.Join(currencies, " "), cur) {
+		return fmt.Errorf("invalid currency code format: %s", cur)
 	}
 
 	return nil
@@ -32,10 +30,9 @@ func validateCurrency(cur string) error {
 
 func validateCountryCode(cc string) error {
 	if len(cc) != 2 {
-		fmt.Println("I got here", cc)
-		return errors.New("invalid country code format")
+		return fmt.Errorf("invalid country code format: %s", cc)
 	}
-	// more validations to be added (like list of country codes to search through)
+	// TODO: more validations to be added (like list of country codes to search through)
 
 	return nil
 }

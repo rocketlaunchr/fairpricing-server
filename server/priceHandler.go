@@ -16,29 +16,47 @@ type convPrice struct {
 
 func PriceConvert(c *fiber.Ctx) {
 
-	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
 	// price e.g. 10AUD
 	price := strings.ToUpper(c.Params("price"))
 
 	currency := price[len(price)-3:]
 	err := validateCurrency(currency)
 	if err != nil {
-		c.Status(400).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
 		return
+
 	}
 
 	amount, err := strconv.ParseFloat(price[:len(price)-3], 64)
 	if err != nil {
-		c.Status(400).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 400, Title: err.Error(),
+			},
+		}
+		c.Status(400).JSON(errorMsg)
+
 		return
 	}
 
 	toCurrency := strings.ToUpper(c.Params("toCurrency"))
 	err = validateCurrency(toCurrency)
 	if err != nil {
-		c.Status(404).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 404, Title: err.Error(),
+			},
+		}
+		c.Status(404).JSON(errorMsg)
+
 		return
+
 	}
 
 	date := c.Params("date") // not implemented for now
@@ -48,7 +66,13 @@ func PriceConvert(c *fiber.Ctx) {
 
 	newPrice, err := exchangerate.ConvertExchangeRate(p, toCurrency)
 	if err != nil {
-		c.Status(500).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 500, Title: err.Error(),
+			},
+		}
+		c.Status(500).JSON(errorMsg)
+
 		return
 	}
 

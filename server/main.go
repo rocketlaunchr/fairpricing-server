@@ -21,11 +21,11 @@ type ApiError struct {
 
 func setUpRoutes(app *fiber.App) {
 	// GET /rates/{base}/{date}?currencies=x,y,z
-	app.Get("/rates/:base/:date", FetchRates)
+	app.Get("/rates/:base/:date?", FetchRates)
 	// GET /convert/{price}/{to currency}/{date}
-	app.Get("/convert/:price/:toCurrency/:date", PriceConvert)
+	app.Get("/convert/:price/:toCurrency/:date?", PriceConvert)
 	// GET /fair/{price+location}/{country code}/{currency}
-	app.Get("/fair/:locPrice/:countryCode/*currency", FairExchange)
+	app.Get("/fair/:locPrice/:countryCode/:currency?", FairExchange)
 }
 
 func main() {

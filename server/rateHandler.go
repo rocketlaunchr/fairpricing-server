@@ -8,17 +8,20 @@ import (
 	"github.com/rocketlaunchr/fairpricing/models"
 )
 
-var rates = make(map[string]*models.Price)
-
 func FetchRates(c *fiber.Ctx) {
 
-	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	var rates = make(map[string]*models.Price)
 
 	// base currency eg AUD
 	base := strings.ToUpper(c.Params("base"))
 	err := validateCurrency(base)
 	if err != nil {
-		c.Status(404).Send(err.Error())
+		errorMsg := JsonErrorResponse{
+			Error: &ApiError{
+				Status: 404, Title: err.Error(),
+			},
+		}
+		c.Status(404).JSON(errorMsg)
 
 		return
 	}
@@ -38,8 +41,14 @@ func FetchRates(c *fiber.Ctx) {
 
 		err := validateCurrency(curr)
 		if err != nil {
-			c.Status(404).Send(err.Error())
-			break
+			errorMsg := JsonErrorResponse{
+				Error: &ApiError{
+					Status: 404, Title: err.Error(),
+				},
+			}
+			c.Status(404).JSON(errorMsg)
+
+			return
 		}
 
 		curs = append(curs, curr)
@@ -52,11 +61,15 @@ func FetchRates(c *fiber.Ctx) {
 		p := models.Price{Value: 1, Currency: cur}
 		rate, err := exchangerate.ConvertExchangeRate(p, base)
 		if err != nil {
-			c.Status(500).Send(err.Error())
+			errorMsg := JsonErrorResponse{
+				Error: &ApiError{
+					Status: 500, Title: err.Error(),
+				},
+			}
+			c.Status(500).JSON(errorMsg)
 
-			break
+			return
 		}
-
 		rates[cur] = &rate
 	}
 
