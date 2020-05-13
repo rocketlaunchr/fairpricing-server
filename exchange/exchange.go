@@ -31,7 +31,7 @@ type rate struct {
 
 var (
 	lock         sync.RWMutex
-	currentRates map[string]rate // Key is upper case currency code.  Val is 1 Euro = x
+	CurrentRates map[string]rate // Key is upper case currency code.  Val is 1 Euro = x
 )
 
 func init() {
@@ -40,12 +40,12 @@ func init() {
 	lock.Lock()
 	cr, err := UpdateExchangeRates()
 	if err != nil {
-		if currentRates == nil {
+		if CurrentRates == nil {
 			panic(err)
 		}
 
 	}
-	currentRates = cr
+	CurrentRates = cr
 	lock.Unlock()
 
 	// Update every 24 hours
@@ -56,7 +56,7 @@ func init() {
 				continue
 			}
 			lock.Lock()
-			currentRates = cr
+			CurrentRates = cr
 			lock.Unlock()
 		}
 	}()
@@ -66,7 +66,7 @@ func GetExchangeRate(cur string) (float64, error) {
 	lock.RLock()
 	defer lock.RUnlock()
 
-	r, exists := currentRates[cur]
+	r, exists := CurrentRates[cur]
 	if !exists {
 		return 0, ErrNoCurrencyData
 	}
@@ -220,7 +220,7 @@ func LoadHardcode(cur string, val float64, t string) {
 	lock.Lock()
 	defer lock.Unlock()
 
-	currentRates[cur] = hardcode(val, t)
+	CurrentRates[cur] = hardcode(val, t)
 }
 
 func hardcode(val float64, t string) rate {

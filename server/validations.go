@@ -3,36 +3,36 @@ package main
 import (
 	"fmt"
 	"strings"
+
+	exchangerate "github.com/rocketlaunchr/fairpricing/exchange"
+	fair "github.com/rocketlaunchr/fairpricing/fair"
 )
-
-var currencies []string = []string{
-	"USD", "JPY", "BGN", "CZK",
-	"DKK", "GBP", "HUF", "PLN",
-	"RON", "SEK", "CHF", "ISK",
-	"NOK", "HRK", "RUB", "TRY",
-	"AUD", "BRL", "CAD", "CNY",
-	"HKD", "IDR", "ILS", "INR",
-	"KRW", "MXN", "MYR", "NZD",
-	"PHP", "SGD", "THB", "ZAR",
-	"EUR", "NGN", "LKR",
-}
-
-var countryCodes []string = []string{"", ""}
 
 func validateCurrency(cur string) error {
 
-	if len(cur) != 3 || !strings.Contains(strings.Join(currencies, " "), cur) {
+	if len(cur) != 3 {
 		return fmt.Errorf("invalid currency code format: %s", cur)
 	}
 
-	return nil
+	for k := range exchangerate.CurrentRates {
+		if k == cur {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("unavailable currency code format: %s", cur)
 }
 
 func validateCountryCode(cc string) error {
 	if len(cc) != 2 {
 		return fmt.Errorf("invalid country code format: %s", cc)
 	}
-	// TODO: more validations to be added (like list of country codes to search through)
 
-	return nil
+	for k := range fair.Ccodes {
+		if k == strings.ToLower(cc) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("unavailable country code format: %s", cc)
 }

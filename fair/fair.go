@@ -22,18 +22,18 @@ func FairPrice(p models.LocalPrice, toCountryCode string, toCurrency ...string) 
 	}
 
 	// Step 2: What percentage of income is the cost?
-	country := strings.ToUpper(ccodes[strings.ToLower(p.CountryCode)].Name)
+	country := strings.ToUpper(Ccodes[strings.ToLower(p.CountryCode)].Name)
 	income := pppGDPperCapita[country]
 	frac := cUSD.Value / income
 
 	// Step 3: Convert frac to value in toCountryCode
-	country = strings.ToUpper(ccodes[strings.ToLower(toCountryCode)].Name)
+	country = strings.ToUpper(Ccodes[strings.ToLower(toCountryCode)].Name)
 	income = pppGDPperCapita[country]
 	suggestedAmt := frac * income
 
 	// Step 4: Convert suggestedAmt to toCurrency
 	if len(toCurrency) == 0 {
-		toCurrency = append(toCurrency, ccodes[strings.ToLower(toCountryCode)].Currency)
+		toCurrency = append(toCurrency, Ccodes[strings.ToLower(toCountryCode)].Currency)
 	}
 	tCurrency, err := exchangerate.ConvertExchangeRate(models.Price{Value: suggestedAmt, Currency: "USD"}, toCurrency[0])
 	if err != nil {

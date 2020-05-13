@@ -239,7 +239,7 @@ type C struct {
 }
 
 // Currency codes taken from: https://www.iban.com/currency-codes
-var ccodes = map[string]C{
+var Ccodes = map[string]C{
 	"ad": C{"andorra", "EUR"},
 	"ae": C{"united arab emirates", "AED"},
 	"af": C{"afghanistan", "AFN"},
