@@ -7,6 +7,7 @@ import (
 
 	"github.com/arsmn/fiber-swagger"
 	"github.com/arsmn/fiber-swagger/example/docs"
+	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
 )
 
@@ -51,6 +52,8 @@ func main() {
 
 	app := fiber.New()
 	docs.SwaggerInfo.Host = host
+
+	app.Use(cors.New())
 	app.Use("/docs", swagger.New(swagger.Config{ // custom
 		// URL:         host + "/docs", //host + "/swagger.json",
 		DeepLinking: true,
