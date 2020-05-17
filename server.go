@@ -54,8 +54,8 @@ func main() {
 	docs.SwaggerInfo.Host = host
 
 	app.Use(cors.New())
-	app.Use("/docs", swagger.New(swagger.Config{ // custom
-		// URL:         host + "/docs", //host + "/swagger.json",
+	app.Use("/docs", swagger.New(swagger.Config{
+		URL:         host + "/docs/doc.json",
 		DeepLinking: true,
 	}))
 	setUpRoutes(app)
