@@ -14,6 +14,19 @@ type convLocalPrice struct {
 	NewLocalPrice *models.LocalPrice `json:"new_local_price"`
 }
 
+// FairExchange godoc
+// @Summary Show a account
+// @Description get string by ID
+// @ID get-string-by-int
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Account ID"
+// @Success 200 {object} model.Account
+// @Header 200 {string} Token "qwerty"
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /fair/{locPrice}/{countryCode}/{currency} [get]
 func FairExchange(c *fiber.Ctx) {
 
 	// locPrice e.g 100AUD@AU

@@ -8,9 +8,23 @@ import (
 	"github.com/rocketlaunchr/fairpricing/models"
 )
 
+type rates map[string]*models.Price
+
+// FetchRates godoc
+// @Summary List accounts
+// @Description get accounts
+// @Accept  json
+// @Produce  json
+// @Param q query string false "name search by q"
+// @Success 200 {array} model.Account
+// @Header 200 {string} Token "qwerty"
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /rates/{base}/{date} [get]
 func FetchRates(c *fiber.Ctx) {
 
-	var rates = make(map[string]*models.Price)
+	var r = rates{}
 
 	// base currency eg AUD
 	base := strings.ToUpper(c.Params("base"))
@@ -70,10 +84,10 @@ func FetchRates(c *fiber.Ctx) {
 
 			return
 		}
-		rates[cur] = &rate
+		r[cur] = &rate
 	}
 
-	response := JsonResponse{Data: rates}
+	response := JsonResponse{Data: r}
 	c.JSON(response)
 
 }

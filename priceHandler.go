@@ -14,6 +14,19 @@ type convPrice struct {
 	NewPrice *models.Price `json:"new_price"`
 }
 
+// PriceConvert godoc
+// @Summary Show a account
+// @Description get string by ID
+// @ID get-string-by-int
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Account ID"
+// @Success 200 {object} model.Account
+// @Header 200 {string} Token "qwerty"
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /convert/{price}/{toCurrency}/{date} [get]
 func PriceConvert(c *fiber.Ctx) {
 
 	// price e.g. 10AUD
