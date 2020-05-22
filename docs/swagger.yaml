@@ -1,4 +1,26 @@
 basePath: /
+definitions:
+  main.ApiError:
+    properties:
+      status:
+        type: integer
+      title:
+        type: string
+    type: object
+  main.JsonErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/main.ApiError'
+        type: object
+    type: object
+  main.JsonResponse:
+    properties:
+      data:
+        type: object
+      meta:
+        description: Reserved field to add some meta information to the API response
+        type: object
+    type: object
 info:
   contact:
     email: fiber@swagger.io
@@ -10,5 +32,125 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Fiber Example API
   version: "1.0"
-paths: {}
+paths:
+  /convert/{price}/{toCurrency}/{date}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Current Price (e.g. 50USD)
+        in: path
+        name: price
+        required: true
+        type: string
+      - description: New Currency to convert price value to
+        in: path
+        name: toCurrency
+        required: true
+        type: string
+      - description: Currency conversion timestamp history
+        in: path
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.JsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+      summary: Show price From one currency value to another specified currency value
+  /fair/{locPrice}/{countryCode}/{currency}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Current Local Price
+        in: path
+        name: locPrice
+        required: true
+        type: string
+      - description: Country Code to convert to
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: Currency to convert to
+        in: path
+        name: currency
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.JsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+      summary: Show price in a local price of a given currency
+  /rates/{base}/{date}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Base currency to convert from to fetch other currency rates
+        in: path
+        name: base
+        required: true
+        type: string
+      - description: Currency conversion timestamp history
+        in: path
+        name: date
+        type: string
+      - description: list of comma separated currencies to List in output
+        in: query
+        name: currencies
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.JsonResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.JsonErrorResponse'
+      summary: List Currency conversion rates for specified currencies.
 swagger: "2.0"

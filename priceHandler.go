@@ -15,17 +15,16 @@ type convPrice struct {
 }
 
 // PriceConvert godoc
-// @Summary Show a account
-// @Description get string by ID
-// @ID get-string-by-int
+// @Summary Show price From one currency value to another specified currency value
 // @Accept  json
 // @Produce  json
-// @Param id path int true "Account ID"
-// @Success 200 {object} model.Account
-// @Header 200 {string} Token "qwerty"
-// @Failure 400 {object} httputil.HTTPError
-// @Failure 404 {object} httputil.HTTPError
-// @Failure 500 {object} httputil.HTTPError
+// @Param price path string true "Current Price (e.g. 50USD)"
+// @Param toCurrency path string true "New Currency to convert price value to"
+// @Param date path string false "Currency conversion timestamp history"
+// @Success 200 {object} JsonResponse
+// @Failure 400 {object} JsonErrorResponse
+// @Failure 404 {object} JsonErrorResponse
+// @Failure 500 {object} JsonErrorResponse
 // @Router /convert/{price}/{toCurrency}/{date} [get]
 func PriceConvert(c *fiber.Ctx) {
 

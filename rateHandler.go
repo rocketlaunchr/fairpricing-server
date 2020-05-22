@@ -11,16 +11,16 @@ import (
 type rates map[string]*models.Price
 
 // FetchRates godoc
-// @Summary List accounts
-// @Description get accounts
+// @Summary List Currency conversion rates for specified currencies.
 // @Accept  json
 // @Produce  json
-// @Param q query string false "name search by q"
-// @Success 200 {array} model.Account
-// @Header 200 {string} Token "qwerty"
-// @Failure 400 {object} httputil.HTTPError
-// @Failure 404 {object} httputil.HTTPError
-// @Failure 500 {object} httputil.HTTPError
+// @Param base path string true "Base currency to convert from to fetch other currency rates"
+// @Param date path string false "Currency conversion timestamp history"
+// @Param currencies query string true "list of comma separated currencies to List in output"
+// @Success 200 {array} JsonResponse
+// @Failure 400 {object} JsonErrorResponse
+// @Failure 404 {object} JsonErrorResponse
+// @Failure 500 {object} JsonErrorResponse
 // @Router /rates/{base}/{date} [get]
 func FetchRates(c *fiber.Ctx) {
 

@@ -15,17 +15,16 @@ type convLocalPrice struct {
 }
 
 // FairExchange godoc
-// @Summary Show a account
-// @Description get string by ID
-// @ID get-string-by-int
+// @Summary Show price in a local price of a given currency
 // @Accept  json
 // @Produce  json
-// @Param id path int true "Account ID"
-// @Success 200 {object} model.Account
-// @Header 200 {string} Token "qwerty"
-// @Failure 400 {object} httputil.HTTPError
-// @Failure 404 {object} httputil.HTTPError
-// @Failure 500 {object} httputil.HTTPError
+// @Param locPrice path string true "Current Local Price"
+// @Param countryCode path string true "Country Code to convert to"
+// @Param currency path string true "Currency to convert to"
+// @Success 200 {object} JsonResponse
+// @Failure 400 {object} JsonErrorResponse
+// @Failure 404 {object} JsonErrorResponse
+// @Failure 500 {object} JsonErrorResponse
 // @Router /fair/{locPrice}/{countryCode}/{currency} [get]
 func FairExchange(c *fiber.Ctx) {
 
