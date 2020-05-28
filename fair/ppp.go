@@ -1,7 +1,7 @@
 package fair
 
 // https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(PPP)_per_capita
-var pppGDPperCapita = map[string]float64{
+var PppGDPperCapita = map[string]float64{
 	"LIECHTENSTEIN":                    139100,
 	"QATAR":                            124500,
 	"MONACO":                           115700,

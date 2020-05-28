@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -48,9 +49,9 @@ func init() {
 	currentRates = cr
 	lock.Unlock()
 
-	// Update every 24 hours
+	// Update every 8 hours
 	go func() {
-		for range time.Tick(24 * time.Hour) {
+		for range time.Tick(8 * time.Hour) {
 			cr, err := UpdateExchangeRates()
 			if err != nil {
 				continue
@@ -60,6 +61,17 @@ func init() {
 			lock.Unlock()
 		}
 	}()
+}
+
+func AllCurrencies() []string {
+	curs := []string{}
+	lock.RLock()
+	for k := range currentRates {
+		curs = append(curs, k)
+	}
+	lock.RUnlock()
+	sort.Strings(curs)
+	return curs
 }
 
 func GetExchangeRate(cur string) (float64, error) {
@@ -105,7 +117,9 @@ func ConvertExchangeRate(price models.Price, toCurrency string) (models.Price, e
 // See: https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
 func UpdateExchangeRates() (map[string]rate, error) {
 
-	currentRates := map[string]rate{}
+	currentRates := map[string]rate{
+		"EUR": rate{&[]float64{1}[0], time.Now()}, // Base currency
+	}
 
 	// Download the zip file
 	resp, err := http.Get(csvURL)
@@ -205,8 +219,6 @@ func UpdateExchangeRates() (map[string]rate, error) {
 	   THB	Thai baht
 	   ZAR	South African rand
 	*/
-
-	currentRates["EUR"] = rate{&[]float64{1}[0], time.Now()}
 
 	// Add Hardcoded values
 	currentRates["NGN"] = hardcode(429.170, "2020-03-30")

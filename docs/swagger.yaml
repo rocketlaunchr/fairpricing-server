@@ -7,6 +7,20 @@ definitions:
       title:
         type: string
     type: object
+  main.CurrenciesResponse:
+    properties:
+      currencies:
+        items:
+          $ref: '#/definitions/main.Currency'
+        type: array
+    type: object
+  main.Currency:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
   main.JsonErrorResponse:
     properties:
       error:
@@ -72,6 +86,16 @@ paths:
           schema:
             $ref: '#/definitions/main.JsonErrorResponse'
       summary: Show price From one currency value to another specified currency value
+  /currencies:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.CurrenciesResponse'
+      summary: Returns all currencies and countries recognized.
   /fair/{locPrice}/{countryCode}/{currency}:
     get:
       consumes:

@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/arsmn/fiber-swagger"
-	"github.com/arsmn/fiber-swagger/example/docs"
 	"github.com/gofiber/cors"
 	"github.com/gofiber/fiber"
+	"github.com/rocketlaunchr/fairpricing/docs"
 )
 
 type JsonResponse struct {
@@ -27,6 +28,9 @@ type ApiError struct {
 }
 
 func setUpRoutes(app *fiber.App) {
+
+	// GET /currencies
+	app.Get("/currencies", CurrenciesHandler)
 	// GET /rates/{base}/{date}?currencies=x,y,z
 	app.Get("/rates/:base/:date?", FetchRates)
 	// GET /convert/{price}/{to currency}/{date}
@@ -47,15 +51,20 @@ func setUpRoutes(app *fiber.App) {
 func main() {
 	var (
 		port = envInt("PORT", 4321)
-		host = envString("HOST", fmt.Sprintf("http://localhost:%d", port))
+		host = envString("HOST", fmt.Sprintf("localhost:%d", port))
 	)
 
 	app := fiber.New()
 	docs.SwaggerInfo.Host = host
+	if strings.HasPrefix(host, "localhost") {
+		docs.SwaggerInfo.Schemes = []string{"http"}
+	} else {
+		docs.SwaggerInfo.Schemes = []string{"https"}
+	}
 
 	app.Use(cors.New())
 	app.Use("/docs", swagger.New(swagger.Config{
-		URL:         host + "/docs/doc.json",
+		URL:         docs.SwaggerInfo.Schemes[0] + "://" + host + "/docs/doc.json",
 		DeepLinking: true,
 	}))
 	setUpRoutes(app)

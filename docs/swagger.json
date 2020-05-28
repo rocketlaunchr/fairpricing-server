@@ -75,6 +75,22 @@
                 }
             }
         },
+        "/currencies": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Returns all currencies and countries recognized.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.CurrenciesResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/fair/{locPrice}/{countryCode}/{currency}": {
             "get": {
                 "consumes": [
@@ -206,6 +222,28 @@
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.CurrenciesResponse": {
+            "type": "object",
+            "properties": {
+                "currencies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Currency"
+                    }
+                }
+            }
+        },
+        "main.Currency": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
