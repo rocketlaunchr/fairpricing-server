@@ -52,8 +52,8 @@ type Currency struct {
 }
 
 type Country struct {
-	Code string // ISO 3166-1 alpha-2 codes
-	Name string // Title Case
+	Code string `json:"code"` // ISO 3166-1 alpha-2 codes
+	Name string `json:"name"` // Title Case
 }
 
 type CurrenciesResponse struct {
