@@ -7,8 +7,21 @@ definitions:
       title:
         type: string
     type: object
+  main.Country:
+    properties:
+      code:
+        description: ISO 3166-1 alpha-2 codes
+        type: string
+      name:
+        description: Title Case
+        type: string
+    type: object
   main.CurrenciesResponse:
     properties:
+      countries:
+        items:
+          $ref: '#/definitions/main.Country'
+        type: array
       currencies:
         items:
           $ref: '#/definitions/main.Currency'
@@ -17,6 +30,7 @@ definitions:
   main.Currency:
     properties:
       code:
+        description: Currency code
         type: string
       name:
         type: string

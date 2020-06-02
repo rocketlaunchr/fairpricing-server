@@ -226,9 +226,28 @@
                 }
             }
         },
+        "main.Country": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "ISO 3166-1 alpha-2 codes",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Title Case",
+                    "type": "string"
+                }
+            }
+        },
         "main.CurrenciesResponse": {
             "type": "object",
             "properties": {
+                "countries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Country"
+                    }
+                },
                 "currencies": {
                     "type": "array",
                     "items": {
@@ -241,6 +260,7 @@
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "Currency code",
                     "type": "string"
                 },
                 "name": {
